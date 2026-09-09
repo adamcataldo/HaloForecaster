@@ -1,0 +1,69 @@
+[project]
+name = "halo"
+version = "0.1.0"
+description = "Source code for the Halo paper."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = [
+    # Our own harness.
+    "numpy",
+    "openpyxl",
+    "pandas",
+    "ray[tune]",
+    "torch",
+    # Required by the vendored Time-Series-Library, at import time.
+    # `data_provider.data_loader` reaches for `datasets` / `huggingface-hub` to
+    # pull a CSV that is not on disk, `sktime` for the classification loaders,
+    # and `scikit-learn` for `StandardScaler`. `layers.SelfAttention_Family`
+    # imports `reformer-pytorch` at module level even though TimeXer never uses
+    # `LSHSelfAttention`, and `utils.tools` imports `matplotlib`.
+    #
+    # Four of them are no longer the Time-Series-Library's alone. Importing
+    # GCGNet drags in that project's own fork of it, which wants `einops`,
+    # `matplotlib`, `scikit-learn` and `reformer-pytorch` by the same routes --
+    # so GCGNet added no dependency here, but it would keep those four alive on
+    # its own if the Time-Series-Library ever left.
+    "datasets",
+    "einops",
+    "huggingface-hub",
+    "matplotlib",
+    "patool",
+    "reformer-pytorch",
+    "scikit-learn",
+    "sktime",
+]
+
+[project.scripts]
+halo = "halo.cli:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.1",
+    "pytest",
+    "ruff>=0.16.4",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+extend-exclude = ["third_party"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4", "RUF", "D"]
+# D1 is the "this has no docstring" family. Nothing here is required to have
+# one -- see the "Don't comment Python" rule -- but a docstring that does turn
+# up has to be well formed, which is what the rest of D checks.
+ignore = ["D1"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.mypy]
+files = ["src", "tests", "get_deps.py"]
+exclude = ["third_party"]
+ignore_missing_imports = true
+check_untyped_defs = true

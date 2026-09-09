@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Vendored third-party source, fetched by get_deps.py. Not redistributed here;
+# each checkout carries its own upstream license.
+third_party/
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Claude Code working files. Kept out of the repo so contributors are free to
+# use whatever tooling they like — nothing here is needed to build or run the
+# code.
+CLAUDE.md
+.claude/
